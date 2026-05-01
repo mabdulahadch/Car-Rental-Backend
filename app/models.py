@@ -78,3 +78,64 @@ class CarDetailResponse(CarBase):
     id: str
     createdat: datetime
     showroom: Optional[ShowroomResponse] = None
+
+
+# ─── Booking Models ───────────────────────────────────────────────
+
+class BookingCreate(BaseModel):
+    """Request body for creating a new booking"""
+    customername: str
+    customeremail: str
+    customerphone: str
+    gender: Optional[str] = "Male"
+    pickupdate: str  # ISO date string
+    returndate: str  # ISO date string
+    totalamount: float
+    withdriver: Optional[bool] = False
+    carid: str
+    userid: Optional[str] = None
+
+class BookingUpdate(BaseModel):
+    """Request body for updating booking status"""
+    status: str  # PENDING, APPROVED, REJECTED, COMPLETED, CANCELLED
+
+class BookingResponse(BaseModel):
+    """Booking response with all fields"""
+    id: str
+    customername: str
+    customeremail: str
+    customerphone: str
+    gender: Optional[str] = None
+    pickupdate: str
+    returndate: str
+    totalamount: float
+    withdriver: Optional[bool] = False
+    status: Optional[str] = "PENDING"
+    carid: str
+    userid: Optional[str] = None
+    createdat: Optional[datetime] = None
+
+class BookingDetailResponse(BookingResponse):
+    """Booking response including nested car data"""
+    car: Optional[CarListResponse] = None
+
+
+# ─── Review Models ────────────────────────────────────────────────
+
+class ReviewCreate(BaseModel):
+    """Request body for creating a review"""
+    username: str
+    userimage: Optional[str] = None
+    rating: float
+    comment: str
+    carid: str
+
+class ReviewResponse(BaseModel):
+    """Review response"""
+    id: str
+    username: str
+    userimage: Optional[str] = None
+    rating: float
+    comment: str
+    carid: str
+    createdat: Optional[datetime] = None

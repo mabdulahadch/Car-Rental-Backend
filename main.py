@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import cars, auth, showrooms, favorites
+from app.routers import cars, auth, showrooms, favorites, bookings, reviews
 
 app = FastAPI(
     title="Car Rental APIs",
@@ -21,6 +21,8 @@ app.include_router(cars.router)
 app.include_router(auth.router)
 app.include_router(showrooms.router)
 app.include_router(favorites.router)
+app.include_router(bookings.router)
+app.include_router(reviews.router)
 
 @app.get("/")
 def read_root():
@@ -28,4 +30,4 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
