@@ -23,8 +23,7 @@ def add_favorite(fav: FavoriteAddRequest):
             raise HTTPException(status_code=400, detail="Could not add to favorites")
         return response.data[0]
     except Exception as e:
-        # Graceful fallback if table is omitted, just return model
-        return FavoriteResponse(id="mock-fav-id", user_id=fav.user_id, car_id=fav.car_id)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error: {str(e)}")
 
 @router.delete("/{user_id}/{car_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_favorite(user_id: str, car_id: str):

@@ -26,10 +26,7 @@ def create_showroom(showroom: ShowroomCreate):
             raise HTTPException(status_code=400, detail="Could not create showroom")
         return response.data[0]
     except Exception as e:
-        # Return a mock response if DB table 'showroom' doesn't exist
-        mock_res = showroom.model_dump()
-        mock_res["id"] = "mock-id-showroom"
-        return ShowroomResponse(**mock_res)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error: {str(e)}")
 
 @router.post("/login", response_model=ShowroomResponse)
 def login_showroom(credentials: ShowroomLogin):
@@ -50,10 +47,7 @@ def login_showroom(credentials: ShowroomLogin):
     except HTTPException:
         raise
     except Exception as e:
-        # Fallback pseudo-authentication for local dev if DB empty/mocking
-        if credentials.name == "admin" and credentials.contact == "123":
-            return ShowroomResponse(id="mock-id-showroom", name="admin", email="mock@email.com", contact="123")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid showroom credentials"
+            detail=f"Login failed: {str(e)}"
         )

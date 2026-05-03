@@ -75,13 +75,24 @@ def get_user_bookings(user_id: str):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.get("/car/{car_id}", response_model=List[BookingResponse])
-def get_car_bookings(car_id: str):
+@router.get("/showroom/{showroom_id}", response_model=List[BookingDetailResponse])
+def get_showroom_bookings(showroom_id: str):
     """
-    Get all bookings for a specific car (showroom owner use).
+    Get all bookings for all cars belonging to a specific showroom.
     """
     try:
-        response = supabase.table("booking").select("*").eq("carid", car_id).order("createdat", desc=True).execute()
+        # First get all car IDs for this showroom
+        cars_res = supabase.table("car").select("id").eq("showroomid", showroom_id).execute()
+        car_ids = [c["id"] for c in cars_res.data]
+        
+        if not car_ids:
+            return []
+            
+        # Then get all bookings for these cars
+        response = supabase.table("booking").select(
+            "*, car(id, brand, model, category, images, rating, location, priceperday, color, seats, fueltype)"
+        ).in_("carid", car_ids).order("createdat", desc=True).execute()
+        
         return response.data
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
